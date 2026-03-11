@@ -1,0 +1,114 @@
+[
+  {
+    "id": "realtime_tracking",
+    "name": "Real-Time Multi-Camera Tracking System",
+    "stack": "YOLOv8, ByteTrack, OpenCV, PyTorch, YOLO-Pose",
+    "impact": "110+ FPS single cam, 95 FPS multi-cam, stable IDs under occlusion and camera transitions",
+    "description": "Production CV pipeline for real-time multi-camera tracking and re-identification at 110+ FPS on RTX GPUs. Handles occlusion, ID drift, and camera transitions with confidence gating, track aging logic, and appearance-based re-ID."
+  },
+  {
+    "id": "exercise_rep_analyzer",
+    "name": "Real-Time Exercise Repetition Analyzer",
+    "stack": "Python, OpenCV, YOLO-Pose, NumPy",
+    "impact": "Wearable-free rep counting for 5 exercises in real time, joint angle graphs, per-person stats",
+    "description": "Detects body keypoints via pose estimation, computes joint angles, tracks motion phases and counts reps for squats, push-ups, bicep curls, shoulder press and sit-ups. Supports smart fitness coaching and rehabilitation tracking without wearable sensors."
+  },
+  {
+    "id": "player_tracking",
+    "name": "Football Player Tracking & Cross-Camera Re-ID",
+    "stack": "YOLOv5, ByteTrack, BoTSORT, CLIP, Hungarian Matching, Python",
+    "impact": "Persistent player IDs across broadcast + tacticam feeds, real-time annotated output",
+    "description": "Detects and tracks players/referees using YOLOv5 + ByteTrack, then re-identifies across broadcast and tactical camera angles using CLIP embeddings and Hungarian Matching for persistent player IDs."
+  },
+  {
+    "id": "football_analytics",
+    "name": "Football Match Analytics Suite",
+    "stack": "YOLOv5, KMeans, Optical Flow, Perspective Transform, Python",
+    "impact": "Jersey-color team clustering, ball possession tracking, pixel-to-meter speed/distance metrics per player",
+    "description": "Full match analytics pipeline: KMeans jersey-color clustering for team assignment, optical flow for camera motion compensation, perspective transform converting pixel coordinates to real-world speed and distance metrics per player."
+  },
+  {
+    "id": "predictive_maintenance",
+    "name": "Predictive Machine Failure Monitoring System",
+    "stack": "Scikit-learn, Pandas, NumPy, SQLite, Python",
+    "impact": "Random Forest on AI4I dataset, unified risk score from failure prob + overload ratio + RMS vibration, Normal/Warning/Critical classification",
+    "description": "ML pipeline combining Random Forest failure probability, electrical overload ratio, and RMS vibration into a unified risk score. Logs all telemetry to SQLite for historical analysis. Supports Industry 4.0 predictive maintenance use cases."
+  },
+  {
+    "id": "fraud_detection",
+    "name": "Financial Fraud Detection Pipeline",
+    "stack": "Scikit-learn, Pandas, Cleanlab, Python",
+    "impact": "6M+ transactions, F1 +18%, recall +22%, false positives -14%",
+    "description": "Fraud detection pipeline over 6M+ financial transactions using Cleanlab label-noise correction and ensemble classifiers — achieving 18% F1 improvement, 22% recall gain, and 14% reduction in false positives."
+  },
+  {
+    "id": "fake_news",
+    "name": "Two-Tier ML + LLM Fake News Detection Pipeline",
+    "stack": "Transformers, Scikit-learn, LangChain, Python",
+    "impact": "99% ML classifier accuracy, LLM layer adds explainability for borderline cases",
+    "description": "Two-stage pipeline: a 99%-accurate ML classifier as first filter, followed by an LLM verification layer via LangChain for explainable verdicts on borderline cases."
+  },
+  {
+    "id": "llm_personalization",
+    "name": "LLM Personalization via Community-Level Prompt Profiling",
+    "stack": "Transformers, LangChain, Python",
+    "impact": "Improved LLM response relevance without fine-tuning using community behavior clustering",
+    "description": "Clusters users by community behavior patterns and generates personalized prompt profiles for each cluster, improving LLM response relevance without any model fine-tuning."
+  },
+  {
+    "id": "book_publishing",
+    "name": "Automated Book Publishing — RAG Multi-Agent System",
+    "stack": "LangChain, RAG, TTS APIs, Python",
+    "impact": "End-to-end automated pipeline from raw source material to published output",
+    "description": "Multi-agent system using RAG to generate, edit, and structure book content from raw source material, with TTS APIs for audio output. Fully automated publishing pipeline with no manual steps."
+  },
+  {
+    "id": "speech_emotion",
+    "name": "Emotional Speech Analysis — RAVDESS Dataset",
+    "stack": "Python, Librosa, NumPy, Scikit-learn",
+    "impact": "5700+ audio files, 24 actors, MFCC + pitch + energy + spectral centroid feature extraction",
+    "description": "Built an acoustic feature extraction pipeline on the RAVDESS dataset (5700+ files, 24 actors). Extracted MFCC, pitch, energy, spectral centroid, and zero-crossing rate to analyze how emotional states affect vocal characteristics. Foundation for an emotion classification model."
+  },
+  {
+    "id": "heart_disease",
+    "name": "Heart Disease Prediction & Clinical Feature Analysis",
+    "stack": "Python, Pandas, Scikit-learn, Matplotlib, Seaborn",
+    "impact": "Correlation matrix analysis for feature selection, ML model for heart disease prediction",
+    "description": "Built a clinical data analysis pipeline for heart disease prediction. Performed correlation analysis to identify high-signal features, applied ML classification models, and generated visual analytics to make healthcare insights interpretable."
+  },
+  {
+    "id": "mutual_fund_clustering",
+    "name": "Mutual Fund Clustering via PCA & Risk Profiling",
+    "stack": "Python, Scikit-learn, PCA, KMeans, Pandas, Matplotlib",
+    "impact": "6 distinct investment profiles identified from conservative low-risk to aggressive high-volatility",
+    "description": "Applied PCA and KMeans clustering to mutual fund data, identifying 6 distinct investment profiles ranging from conservative low-risk to aggressive high-volatility. Visual analytics validate methodology and make complex financial insights accessible."
+  },
+  {
+    "id": "iot_integrator",
+    "name": "Multi-Sensor IoT Data Integration Framework",
+    "stack": "Pandas, NumPy, SQL, Python",
+    "impact": "Unified analytics pipeline across heterogeneous sensor sources",
+    "description": "Normalizes and merges data from heterogeneous IoT sensor streams into a unified SQL-backed analytics pipeline, handling schema mismatches and missing data across sources."
+  },
+  {
+    "id": "affective_computing",
+    "name": "Emotion Recognition from Motion & Biosignals",
+    "stack": "PyTorch, Signal Processing, Python",
+    "impact": "Multi-modal emotion classification across 6 emotional states",
+    "description": "Fuses skeletal motion data and biosignals using PyTorch for multi-modal emotion classification. Handles noisy sensor inputs with signal processing filters across 6 emotional states."
+  },
+  {
+    "id": "job_agent",
+    "name": "AI Job Application Automation Agent",
+    "stack": "Python, Groq (LLaMA 3.3 70B), Gmail API, BeautifulSoup, Node.js",
+    "impact": "200+ jobs scraped per run across 7 boards, auto-applies via Gmail, auto-replies to interviews, follow-ups after 4 days, halts on offer acceptance",
+    "description": "Fully autonomous multi-agent job application system. Scrapes 7 job boards, uses LLaMA 3.3 70B via Groq to select best-fit projects and write tailored cover letters, builds custom DOCX+PDF resumes, sends applications via Gmail API, monitors inbox for replies, auto-replies to interview invites, sends follow-ups after 4 days of silence, and stops automatically on offer acceptance. Includes a live HTML dashboard."
+  },
+  {
+    "id": "micro1_ai_analyst",
+    "name": "AI Evaluation & Research — micro1 Certified Analyst",
+    "stack": "AI model evaluation, output analysis, research methodology",
+    "impact": "Certified Data & AI Research Analyst by micro1 after structured AI evaluation interview",
+    "description": "Completed micro1's AI evaluation interview process covering AI system analysis, model output evaluation, and applied research thinking. Certified as Data & AI Research Analyst. Applied across anomaly detection, NLP, predictive analytics, and financial analytics domains."
+  }
+]

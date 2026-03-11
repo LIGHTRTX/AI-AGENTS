@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="refresh" content="60">
+<title>Tejas — Job Agent</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Syne:wght@400;700;800&display=swap');
+
+  :root {
+    --bg: #0a0c10;
+    --card: #111318;
+    --border: #1e2330;
+    --accent: #00ff88;
+    --accent2: #0088ff;
+    --warn: #ff6b35;
+    --gold: #ffd700;
+    --text: #e4e8f0;
+    --muted: #5a6070;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    min-height: 100vh;
+    padding: 32px;
+    font-size: 13px;
+  }
+
+  /* Animated background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; }
+
+  /* Header */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .title {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  .title span { color: var(--accent); }
+
+  .status-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .pulse {
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  /* Stats grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 20px 16px;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .stat-card:hover { border-color: var(--accent); }
+
+  .stat-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent-color, var(--accent));
+  }
+
+  .stat-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .stat-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--accent-color, var(--accent));
+    line-height: 1;
+  }
+
+  .stat-sub {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* Two-col layout */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+  }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text);
+  }
+
+  .badge {
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: rgba(0,255,136,0.1);
+    color: var(--accent);
+    border: 1px solid rgba(0,255,136,0.2);
+  }
+
+  /* Applications table */
+  .app-list { padding: 0; }
+
+  .app-row {
+    display: grid;
+    grid-template-columns: 24px 1fr 140px 90px 80px;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.15s;
+  }
+
+  .app-row:hover { background: rgba(255,255,255,0.02); }
+  .app-row:last-child { border-bottom: none; }
+
+  .app-row.header-row {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+    padding: 8px 20px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.01);
+  }
+
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+  }
+
+  .status-interview { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+  .status-sent      { background: var(--accent2); }
+  .status-saved     { background: var(--muted); }
+  .status-rejected  { background: var(--warn); }
+  .status-accepted  { background: var(--gold); box-shadow: 0 0 12px var(--gold); animation: pulse 1s infinite; }
+
+  .company-name {
+    font-weight: 600;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .job-title {
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .tag {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    background: rgba(0,136,255,0.1);
+    color: var(--accent2);
+    border: 1px solid rgba(0,136,255,0.2);
+    text-align: center;
+  }
+
+  .status-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .status-label.interview { color: var(--accent); }
+  .status-label.sent      { color: var(--accent2); }
+  .status-label.saved     { color: var(--muted); }
+  .status-label.rejected  { color: var(--warn); }
+  .status-label.accepted  { color: var(--gold); font-weight: 700; }
+
+  .date-col { color: var(--muted); font-size: 11px; }
+
+  /* Sources chart */
+  .sources-list { padding: 16px 20px; }
+
+  .source-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .source-name {
+    width: 90px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .source-bar {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .source-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    border-radius: 3px;
+    transition: width 0.8s ease;
+  }
+
+  .source-count {
+    font-size: 11px;
+    color: var(--text);
+    width: 24px;
+    text-align: right;
+  }
+
+  /* Timeline */
+  .timeline { padding: 16px 20px; }
+
+  .tl-day { margin-bottom: 16px; }
+
+  .tl-date {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .tl-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .tl-bar {
+    height: 20px;
+    background: linear-gradient(90deg, rgba(0,136,255,0.6), rgba(0,255,136,0.6));
+    border-radius: 3px;
+    min-width: 4px;
+    transition: width 0.8s ease;
+  }
+
+  .tl-count {
+    font-size: 11px;
+    color: var(--text);
+  }
+
+  /* Command panel */
+  .commands {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+  }
+
+  .cmd-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  .cmd-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+
+  .cmd {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 12px 14px;
+  }
+
+  .cmd code {
+    display: block;
+    font-size: 12px;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .cmd small { font-size: 10px; color: var(--muted); }
+
+  /* Alert banner */
+  .alert {
+    background: rgba(255,215,0,0.05);
+    border: 1px solid rgba(255,215,0,0.3);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--gold);
+  }
+
+  .last-updated {
+    font-size: 10px;
+    color: var(--muted);
+    text-align: right;
+    margin-top: 20px;
+  }
+
+  #loading {
+    text-align: center;
+    padding: 60px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div id="loading">⟳ Loading dashboard...</div>
+  <div id="app" style="display:none">
+
+    <div class="header">
+      <div>
+        <div class="title">TEJAS <span>JOB AGENT</span> v4</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">
+          tejasmani17@gmail.com · github.com/LIGHTRTX · India 🇮🇳 → Remote
+        </div>
+      </div>
+      <div class="status-badge">
+        <div class="pulse" id="status-pulse"></div>
+        <span id="status-text">ACTIVE</span>
+      </div>
+    </div>
+
+    <div id="alert-banner" style="display:none" class="alert"></div>
+
+    <div class="stats-grid">
+      <div class="stat-card" style="--accent-color:#e4e8f0">
+        <div class="stat-label">Total Applied</div>
+        <div class="stat-value" id="stat-total">0</div>
+        <div class="stat-sub">applications</div>
+      </div>
+      <div class="stat-card" style="--accent-color:var(--accent2)">
+        <div class="stat-label">Emails Sent</div>
+        <div class="stat-value" id="stat-sent">0</div>
+        <div class="stat-sub">via Gmail</div>
+      </div>
+      <div class="stat-card" style="--accent-color:var(--accent)">
+        <div class="stat-label">Interviews 🎯</div>
+        <div class="stat-value" id="stat-interviews">0</div>
+        <div class="stat-sub">invited</div>
+      </div>
+      <div class="stat-card" style="--accent-color:#888">
+        <div class="stat-label">Pending ⏳</div>
+        <div class="stat-value" id="stat-pending">0</div>
+        <div class="stat-sub">no reply yet</div>
+      </div>
+      <div class="stat-card" style="--accent-color:var(--warn)">
+        <div class="stat-label">Rejected ❌</div>
+        <div class="stat-value" id="stat-rejected">0</div>
+        <div class="stat-sub">declined</div>
+      </div>
+      <div class="stat-card" style="--accent-color:var(--gold)">
+        <div class="stat-label">Accepted 🎉</div>
+        <div class="stat-value" id="stat-accepted">0</div>
+        <div class="stat-sub">offers</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Applications</span>
+          <span class="badge" id="app-count">0 total</span>
+        </div>
+        <div class="app-row header-row">
+          <div></div>
+          <div>Company / Role</div>
+          <div>Source</div>
+          <div>Status</div>
+          <div>Date</div>
+        </div>
+        <div class="app-list" id="app-list"></div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Sources</span>
+          </div>
+          <div class="sources-list" id="sources-list"></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Applications / Day</span>
+          </div>
+          <div class="timeline" id="timeline"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="commands">
+      <div class="cmd-title">Terminal Commands</div>
+      <div class="cmd-grid">
+        <div class="cmd">
+          <code>python3 main.py test</code>
+          <small>Safe test — 2 jobs only</small>
+        </div>
+        <div class="cmd">
+          <code>python3 main.py run</code>
+          <small>Full run — up to 30 jobs</small>
+        </div>
+        <div class="cmd">
+          <code>python3 main.py monitor</code>
+          <small>Check Gmail for replies</small>
+        </div>
+        <div class="cmd">
+          <code>python3 main.py projects</code>
+          <small>Check GitHub for new work</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="last-updated">
+      Dashboard auto-refreshes every 60 seconds · Last loaded: <span id="load-time"></span>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// Reads logs/stats.json and logs/applications.json
+// Place this HTML file in your tejas-agent folder and open with browser
+
+async function loadData() {
+  try {
+    // Try to load stats.json and applications.json from same folder
+    let stats = {}, apps = [];
+
+    try {
+      const sr = await fetch('logs/stats.json');
+      if (sr.ok) stats = await sr.json();
+    } catch(e) {}
+
+    try {
+      const ar = await fetch('logs/applications.json');
+      if (ar.ok) apps = await ar.json();
+    } catch(e) {}
+
+    render(stats, apps);
+  } catch(e) {
+    document.getElementById('loading').textContent = '⚠ Could not load data. Open this file from your tejas-agent folder.';
+  }
+}
+
+function render(stats, apps) {
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+
+  // Stats
+  document.getElementById('stat-total').textContent     = stats.total || apps.length || 0;
+  document.getElementById('stat-sent').textContent      = stats.sent || 0;
+  document.getElementById('stat-interviews').textContent= stats.interviews || 0;
+  document.getElementById('stat-pending').textContent   = stats.pending || 0;
+  document.getElementById('stat-rejected').textContent  = stats.rejections || 0;
+  document.getElementById('stat-accepted').textContent  = stats.accepted || 0;
+  document.getElementById('app-count').textContent      = `${apps.length} total`;
+  document.getElementById('load-time').textContent      = new Date().toLocaleTimeString();
+
+  // Accepted alert
+  const accepted = apps.filter(a => a.status === 'accepted');
+  if (accepted.length > 0) {
+    const b = document.getElementById('alert-banner');
+    b.style.display = 'flex';
+    b.innerHTML = `🎉 OFFER RECEIVED from ${accepted[0].company}! Agent is in standby. Check your Desktop for the notification file.`;
+    document.getElementById('status-pulse').style.background = 'var(--gold)';
+    document.getElementById('status-text').textContent = 'OFFER RECEIVED';
+  }
+
+  // Applications list (newest first)
+  const list = document.getElementById('app-list');
+  list.innerHTML = '';
+  const sorted = [...apps].reverse();
+  sorted.slice(0, 40).forEach(app => {
+    const date = (app.applied_at || '').slice(0,10);
+    const status = app.status || 'saved';
+    list.innerHTML += `
+      <div class="app-row">
+        <div><span class="status-dot status-${status}"></span></div>
+        <div>
+          <div class="company-name">${esc(app.company || '—')}</div>
+          <div class="job-title">${esc(app.title || '—')}</div>
+        </div>
+        <div><span class="tag">${esc(app.source || '?')}</span></div>
+        <div><span class="status-label ${status}">${status.toUpperCase()}</span></div>
+        <div class="date-col">${date}</div>
+      </div>`;
+  });
+
+  // Sources
+  const sources = stats.sources || {};
+  const maxSrc = Math.max(...Object.values(sources), 1);
+  const sl = document.getElementById('sources-list');
+  sl.innerHTML = '';
+  Object.entries(sources).sort((a,b)=>b[1]-a[1]).forEach(([src, cnt]) => {
+    sl.innerHTML += `
+      <div class="source-row">
+        <div class="source-name">${esc(src)}</div>
+        <div class="source-bar"><div class="source-fill" style="width:${(cnt/maxSrc*100).toFixed(0)}%"></div></div>
+        <div class="source-count">${cnt}</div>
+      </div>`;
+  });
+
+  // Timeline (last 10 days)
+  const daily = stats.daily || {};
+  const days = Object.keys(daily).sort().slice(-10);
+  const maxDay = Math.max(...Object.values(daily), 1);
+  const tl = document.getElementById('timeline');
+  tl.innerHTML = '';
+  if (days.length === 0) {
+    tl.innerHTML = '<div style="color:var(--muted);font-size:11px">No data yet</div>';
+  } else {
+    days.reverse().forEach(day => {
+      const cnt = daily[day];
+      tl.innerHTML += `
+        <div class="tl-day">
+          <div class="tl-date">${day}</div>
+          <div class="tl-bar-wrap">
+            <div class="tl-bar" style="width:${(cnt/maxDay*200).toFixed(0)}px"></div>
+            <div class="tl-count">${cnt} apps</div>
+          </div>
+        </div>`;
+    });
+  }
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+loadData();
+</script>
+</body>
+</html>
